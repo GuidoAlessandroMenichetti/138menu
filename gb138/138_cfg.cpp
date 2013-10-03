@@ -13,7 +13,7 @@ int config138 :: start()
 
 void config138 :: save()
 {
-    FILE * a;
+	FILE * a;
 	a = fopen(CFG_FILE, "wb");
 	fprintf(a,
 "PATH=%s\r\n\
@@ -24,14 +24,14 @@ PKGICON=%d\r\n\
 LOADMODE=%d\r\n\
 GAMEFOLDER=%d\r\n\
 USEWALL=%s\r\n",
-                this->appPath, this->appName, this->lang, this->app_icon, this->zip_icon,
-                this->load_mode, this->list_GAME, this->custom_wall);
+	this->appPath, this->appName, this->lang, this->app_icon, this->zip_icon,
+	this->load_mode, this->list_GAME, this->custom_wall);
 	fclose(a);
 };
 
 void config138 :: makeDefault()
 {
-    if(this->appPath) free(this->appPath);
+	if(this->appPath) free(this->appPath);
 	if(this->appName) free(this->appName);
 	if(this->custom_wall) free(this->custom_wall);
 	this->appPath = (char*)malloc(strlen(DEFAULT_PATH)+1);
@@ -50,16 +50,16 @@ void config138 :: makeDefault()
 
 int config138 :: load()
 {
-    FILE * a;
-    a = fopen(CFG_FILE, "rb");
-    if(!a) return config138::CORRUPT;
+	FILE * a;
+	a = fopen(CFG_FILE, "rb");
+	if(!a) return config138::CORRUPT;
 
-    char buffer[config138::BUFFER_SIZE], * aux;
-    unsigned c=0;
+	char buffer[config138::BUFFER_SIZE], * aux;
+	unsigned c=0;
 
-    while(fgets(buffer, sizeof(buffer), a))
+	while(fgets(buffer, sizeof(buffer), a))
 	{
-	    if(*buffer=='#') continue;
+		if(*buffer=='#') continue;
 
 		aux = strrchr(buffer, '\r');
 		if(!aux) aux = strrchr(buffer, '\n');
@@ -112,7 +112,7 @@ int config138 :: load()
 		};
 	};
 	fclose(a);
-    if(c!=8) return config138::CORRUPT;
+	if(c!=8) return config138::CORRUPT;
 	if(strncmp("ms0:/", this->appPath, 5)) return config138::CORRUPT;
 	unsigned len = strlen(this->appPath);
 	if(this->appPath[len-1]!='/') 
@@ -130,16 +130,16 @@ int config138 :: load()
 
 config138 :: config138()
 {
-    this->appName = NULL;
-    this->appPath = NULL;
-    this->custom_wall = NULL;
+	this->appName = NULL;
+	this->appPath = NULL;
+	this->custom_wall = NULL;
 };
 
 void config138 :: clear()
 {
-    if(this->appName) free(this->appName);
-    if(this->appPath) free(this->appPath);
-    if(this->custom_wall) free(this->custom_wall);
+	if(this->appName) free(this->appName);
+	if(this->appPath) free(this->appPath);
+	if(this->custom_wall) free(this->custom_wall);
 };
 
 void config138 :: setAppName(const char * str)

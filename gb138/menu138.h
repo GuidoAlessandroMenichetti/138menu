@@ -42,13 +42,13 @@ extern gbControl ctrl;
 class menu138
 {
 	public:
-	
+
 	enum ACTIONS {INSTALL_SELECTED, DELETE_SELECTED, FORMAT_HBFOLDER};
 	enum MENU_RETURNS {MENU_GRAPHIC_ERROR, MENU_OK};
 	enum MENU_CONSTANTS{SETTINGS_COUNT = 9, MAX_ON_SCREEN = 14, THREAD_DELAY = 1000};
 	enum FONT_COLORS{BLACK = 0xFF000000, WHITE = 0xFFFFFFFF, GREY  = 0xFFCCCCCC, YELLOW = 0xFF00FFFF};
 	enum ORDER {SETTINGS = 0, GAMES = 1, INSTALL = 2};
-	
+
 	menu138();
 	int start();
 	static void flip();
@@ -58,9 +58,9 @@ class menu138
 	static void startGl();
 	static void killGl();
 	static void clrscr();
-	
+
 	private:
-	
+
 	entry138 * actualEntry(int menu, int index);
 	void loadEBOOT(const char * path);
 	void updateGameList();
@@ -70,13 +70,13 @@ class menu138
 	void settingsCtrl();
 	void animCheck();
 	void waitButtonsPressed();
-	
+
 	void drawImages();
 	void drawText();
 	void check();
 	void roll(int dir);
 	int animating();
-	
+
 	void setMessage(const char * caption, const char * cat1, const char * cat2, int action_code);
 	void doAction(int action_code);
 

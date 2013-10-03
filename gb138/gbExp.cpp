@@ -15,11 +15,11 @@ int gbExplorer :: folderExist(const char * path)
 
 int gbExplorer :: fileExist(const char * path)
 {
-    FILE * a;
-    a = fopen(path, "rb");
-    if(!a) return gbExplorer::FILE_NOT_FOUND;
-    fclose(a);
-    return gbExplorer::FILE_OK;
+	FILE * a;
+	a = fopen(path, "rb");
+	if(!a) return gbExplorer::FILE_NOT_FOUND;
+	fclose(a);
+	return gbExplorer::FILE_OK;
 };
 
 int gbExplorer :: createFolder(const char * path)
@@ -38,7 +38,7 @@ int gbExplorer :: deleteFolder(const char * path)
 {
 	SceUID d; 
 	SceIoDirent entry;
-	
+
 	d = sceIoDopen(path);
 	if(d>=0)
 	{
@@ -59,6 +59,6 @@ int gbExplorer :: deleteFolder(const char * path)
 		sceIoRmdir(path);
 		free(new_path);
 	};
-	
+
 	return gbExplorer::DELETED;
 };

@@ -15,20 +15,19 @@ class gbAlloc
     public:
 
 	enum GBALLOC_ERRORS {GBALLOC_SUCCESS, GBALLOC_NO_MEMORY=-1, GBALLOC_NO_DATA=-2, GBALLOC_NOT_FOUND=-3};
-	
-    void Create();
-    int Add(const tData *);
-    tData * Get(unsigned);
-    int Remove(unsigned);
-    int GetCount();
-    void FreeMemory();
-    gbAlloc();
-    ~gbAlloc();
-	
+
+	void Create();
+	int Add(const tData *);
+	tData * Get(unsigned);
+	int GetCount();
+	void FreeMemory();
+	gbAlloc();
+	~gbAlloc();
+
 	private:
 
-    node * start;
-    int count;
+	node * start;
+	int count;
 };
 
 

@@ -13,20 +13,20 @@
 class config138
 {
 	public:
-	
+
 	enum ENUM_CONFIG_MODES {MODE_ACCURATE = 0, MODE_FAST = 1};
-    enum ENUM138_CONFIG {LOADED, GENERATED, CORRUPT, BUFFER_SIZE = 200, LANG_COUNT = 6};
+	enum ENUM138_CONFIG {LOADED, GENERATED, CORRUPT, BUFFER_SIZE = 200, LANG_COUNT = 6};
 
 	config138();
 	int start();
-    void clear();
-    int load();
-    void save();
+	void clear();
+	int load();
+	void save();
 	void makeDefault();
 	void setInstallPath(const char * str);
 	void setAppName(const char * str);
 
-    char * appPath;
+	char * appPath;
 	char * appName;
 	int lang;
 	int zip_icon;

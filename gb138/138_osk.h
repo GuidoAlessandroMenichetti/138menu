@@ -23,14 +23,14 @@ static const char keyboard[][4][13] =
 class osk138
 {
 	public:
-	
+
 	enum OSK_CONSTANTS {MAX_BUFFER = 30};
-	
+
 	osk138();
 	void activate(const char * message, const char * value, int limit);
 	char * getOutput();
 	int Cancelled();
-	
+
 	private:
 	void work();
 	void draw();
@@ -38,7 +38,7 @@ class osk138
 	void check();
 	void addChar(char character);
 	void printChar(char character, int x, int y, unsigned color, unsigned shadow, float size);
-	
+
 	char caption[MAX_BUFFER];
 	char default_value[MAX_BUFFER];
 	char input[MAX_BUFFER];

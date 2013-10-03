@@ -27,31 +27,31 @@ extern config138 cfg;
 
 class entry138
 {
-    public:
+	public:
 
-    enum ENUM138_ENTRY_TYPES {UNKNOWN = -1, HOMEBREW = 0, INSTALLER_HB = 1};
-    enum ENUM138_RETURNS {INVALID = 0, IS_EBOOT = 1, IS_ZIP=8, PARSE_ERROR = 2, PARSE_OK = 3, LOAD_ERROR = 4, LOAD_OK = 5};
-    enum ENUM138_MODES {MODE_ACCURATE = 0, MODE_FAST = 1};
-    enum ENUM138_LIMITS {NAME_LIMIT = 30, PARSE_BUF = 40, MAX_IMG_WIDTH = 144, MAX_IMG_HEIGHT = 80};
+	enum ENUM138_ENTRY_TYPES {UNKNOWN = -1, HOMEBREW = 0, INSTALLER_HB = 1};
+	enum ENUM138_RETURNS {INVALID = 0, IS_EBOOT = 1, IS_ZIP=8, PARSE_ERROR = 2, PARSE_OK = 3, LOAD_ERROR = 4, LOAD_OK = 5};
+	enum ENUM138_MODES {MODE_ACCURATE = 0, MODE_FAST = 1};
+	enum ENUM138_LIMITS {NAME_LIMIT = 30, PARSE_BUF = 40, MAX_IMG_WIDTH = 144, MAX_IMG_HEIGHT = 80};
 
 	entry138();
-    int create(const char * file);
-    static int getFileType(const char * file, unsigned offset);
+	int create(const char * file);
+	static int getFileType(const char * file, unsigned offset);
 	static int getEbootHeader(const char * file, ebootHeader * eb, unsigned offset);
 	char * getName();
-    char * getPath();
-    int getType();
+	char * getPath();
+	int getType();
 	Image * getIcon();
-    void clear();
+	void clear();
 
-    private:
+	private:
 
-    int load(const char * file);
+	int load(const char * file);
 	int parseSfo(const char * file, unsigned offset);
-    char * name;
-    char * path;
+	char * name;
+	char * path;
 	Image * icon;
-    int type;
+	int type;
 };
 
 #endif

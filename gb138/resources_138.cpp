@@ -31,9 +31,9 @@ unsigned resources138 :: search(const char * filename)
 	FILE * a;
 	a = fopen(IMAG_FILE, "rb");
 	if(!a) return resources138::FILES_MISSING;
-	
+
 	unsigned i, fileCount, offset = 0;
-    fileData f;
+	fileData f;
 
 	fread(&fileCount, sizeof(unsigned), 1, a);
 	offset += sizeof(unsigned);
@@ -52,7 +52,7 @@ unsigned resources138 :: search(const char * filename)
 			offset += f.size;
 		};
 	};
-	
+
 	fclose(a);
 	return 0;
 };
@@ -90,7 +90,7 @@ int resources138 :: loadImages()
 
 	if(strcmp(cfg.custom_wall, "DEFAULT")) this->img[MENU_CUSTOMBACK] = loadImage(cfg.custom_wall, 0);
 	else this->img[MENU_CUSTOMBACK] = NULL;
-	
+
 	for(int i=0;i<resources138::IMAGE_COUNT-1;i++)
 	{
 		if(!this->img[i]) 

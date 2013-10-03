@@ -22,12 +22,12 @@ int menu138 :: start()
 {
 	pspDebugScreenPrintf("Starting graphics...\n");
 	this->startGl();
-	
+
 	pspDebugScreenPrintf("Creating app list...\n");
 	this->updateGameList();
 	pspDebugScreenPrintf("Creating installer list...\n");
 	this->updateInstallerList();
-	
+
 	while(active)
 	{
 		ctrl.update();
@@ -40,7 +40,7 @@ int menu138 :: start()
 		this->flip();
 		ctrl.flush();
 	};
-	
+
 	game_list.FreeMemory();
 	installer_list.FreeMemory();
 	this->killGl();
@@ -242,7 +242,7 @@ void menu138 :: animCheck()
 		if(circlex>circleTo) circlex-=5;
 		if(circlex==circleTo) circle_move=0;
 	};
-	
+
 	//Rotation animation control
 	if(rotation_flag==1) 
 	{
@@ -282,7 +282,7 @@ void menu138 :: animCheck()
 			list_move=0;
 		};
 	};
-	
+
 	//Title (Y) animation control
 	if(title_move==1) 
 	{
@@ -322,7 +322,7 @@ void menu138 :: check()
 			this->waitButtonsPressed();
 			return;
 		};
-	
+
 		if(menu < 0) //main menu
 		{
 			if(ctrl.getCtrl()->up || ctrl.getCtrl()->left || ctrl.getCtrl()->rtrigger) this->roll(-1);
@@ -416,7 +416,7 @@ void menu138 :: drawText()
 	//Draw the menu texts
 	guStart();
 	printText(lang_main_menu[cfg.lang][op], circlex+160, circley+titley+41, WHITE, BLACK, SIZE_BIG);
-	
+
 	if(this->animating()) return;
 	if(menu==SETTINGS) //Settings menu draw
 	{
@@ -463,7 +463,7 @@ void menu138 :: drawText()
 				printText(lang_no_installers[cfg.lang], 107, 60, WHITE, BLACK, SIZE_LITTLE);
 		};
 	};
-	
+
 	if(message_active)
 	{
 		printText(message, 17, 216, WHITE, BLACK, SIZE_LITTLE);
@@ -480,22 +480,22 @@ void menu138 :: drawImages()
 	//Background drawing
 	Image * back_show = res.img[MENU_CUSTOMBACK]? res.img[MENU_CUSTOMBACK]: res.img[MENU_BACKGROUND];
 	this->printImg(back_show, 0, 0);
-	
+
 	//Spheres drawing
 	this->printImg(res.img[MENU_CIRCLE], circlex-8, circley-10);
 	this->printImg(res.img[MENU_INS], circlex+60*cos(rotation+RD),circley+60*sin(rotation+RD));
 	this->printImg(res.img[MENU_JOY], circlex+60*cos(rotation),circley+60*sin(rotation));
 	this->printImg(res.img[MENU_SET], circlex+60*cos(rotation-RD),circley+60*sin(rotation-RD));
-	
+
 	//Shperes shadow drawing
 	if(op!=SETTINGS || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+60*cos(rotation-RD),circley+60*sin(rotation-RD));
 	if(op!=GAMES || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+60*cos(rotation),circley+60*sin(rotation));
 	if(op!=INSTALL || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+60*cos(rotation+RD),circley+60*sin(rotation+RD));
-	
+
 	//List and bar drawing
 	this->printImg(res.img[MENU_LISTBACK], listx, 45);
 	this->printImg(res.img[MENU_BAR], circlex+145, circley+titley+23);
-	
+
 	//Game icon back square and icon drawing
 	if(!this->animating() && (menu==GAMES? cfg.app_icon: cfg.zip_icon) && menu>0 && menu!=SETTINGS)
 	{
@@ -516,15 +516,15 @@ void menu138 :: drawImages()
 int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_name)
 {
 	SceUID dir;
-    SceIoDirent entry; 
+	SceIoDirent entry; 
 	tData new_node;
 	int i, found, error, count = list->GetCount();
 	char eboot_names[][15] = { "wmenu.bin\0", "FBOOT.PBP\0", "VBOOT.PBP\0", "CUSTOM\0"}, buffer[500];
 	entry138 * new_entry = NULL;
-	
+
 	strcpy(eboot_names[3], cfg.appName);
 	memset(&entry, 0, sizeof(SceIoDirent));
-    dir = sceIoDopen(start);
+	dir = sceIoDopen(start);
 	if(dir>=0)
 	{
 		while((sceIoDread(dir, &entry) > 0))
@@ -566,5 +566,5 @@ int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_
 		};
 		sceIoDclose(dir);
 	};
-    return count;
+	return count;
 };

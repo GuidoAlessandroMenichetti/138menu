@@ -18,7 +18,7 @@ typedef struct
 class gbControl
 {
 	public:
-	
+
 	void update();
 	void flush();
 	int isPressed();
@@ -26,7 +26,7 @@ class gbControl
 	void restoreWait();
 	control * getCtrl();
 	gbControl();
-	
+
 	private:
 	control ctrl;
 	int pressed, wait, get, wait_time;

@@ -1,6 +1,6 @@
 #ifndef MENU138CONFIG
 #define MENU138CONFIG
 
-#define CEF
+//#define CEF
 
 #endif

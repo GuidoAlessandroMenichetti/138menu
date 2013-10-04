@@ -43,6 +43,7 @@ int entry138 :: load(const char * file)
 	if(this->type == entry138::INSTALLER_HB && cfg.load_mode==config138::MODE_FAST) //Fast load mode
 	{
 		parse_file = (char *)malloc(strlen(file)+11);
+		if(!parse_file) return entry138::LOAD_ERROR;
 		strcpy(parse_file, file);
 		strcpy(strrchr(parse_file, '/')+1, FAST_PARAM);
 		if(gbExplorer::fileExist(parse_file)!=gbExplorer::FILE_OK) //No PARSE.SFO = no fun
@@ -53,7 +54,7 @@ int entry138 :: load(const char * file)
 		icon_file = (char *)malloc(strlen(file)+11);
 		strcpy(icon_file, file);
 		strcpy(strrchr(icon_file, '/')+1, FAST_ICON);
-		if(gbExplorer::fileExist(icon_file)!=gbExplorer::FILE_OK) get_icon = get_icon && 1;
+		if(gbExplorer::fileExist(icon_file)!=gbExplorer::FILE_OK) get_icon = 0;
 	}
 	else //Accurate mode and homebrew load
 	{
@@ -101,7 +102,6 @@ int entry138 :: parseSfo(const char * file, unsigned offset)
 	a = fopen(file, "rb");
 	if(!a) return entry138::PARSE_ERROR;
 	fseek(a, offset, SEEK_SET);
-
 	sfoHeader sfo;
 	indexTable index;
 	char tmp[PARSE_BUF];
@@ -138,7 +138,7 @@ int entry138 :: parseSfo(const char * file, unsigned offset)
 			fclose(a);
 			return ret;
 		};
-
+		
 		seek += sizeof(indexTable);
 		fseek(a, seek, 0);
 	};

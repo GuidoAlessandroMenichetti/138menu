@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 void finish()
 {
 	cfg.clear();
@@ -14,6 +15,7 @@ int begin()
 	
 	pspDebugScreenPrintf("Starting 138Menu %s by GUIDOBOT\n", VERSION);
 	pspDebugScreenPrintf("Loading config file\n");
+	
 	if(cfg.start()==config138::GENERATED)
 		pspDebugScreenPrintf("Config file not found or corrupted. Generating defaults...\n");
 		

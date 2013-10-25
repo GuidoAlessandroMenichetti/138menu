@@ -8,6 +8,7 @@
 #include <pspdisplay.h>
 #include <math.h>
 
+#include "../config.h"
 #include "lang.h"
 #include "resources_138.h"
 #include "138_entry.h"
@@ -21,6 +22,10 @@ extern "C"
 #include "../graphics/graphics.h"
 #include "../graphics/intraFont.h"
 };
+
+#ifdef ARK
+#include "../other/ark.h"
+#endif
 
 #define __printf 		pspDebugScreenPrintf
 #define PI 				3.14159265
@@ -63,9 +68,10 @@ class menu138
 
 	entry138 * actualEntry(int menu, int index);
 	void loadEBOOT(const char * path);
+	void cefStart(entry138 * entry);
 	void updateGameList();
 	void updateInstallerList();
-	int fillList(gbAlloc * list, const char * start, const char * forced_name);
+	int fillList(gbAlloc * list, const char * start, const char * forced_name, int append);
 	void deleteItemFromSD(entry138 * entry);
 	void settingsCtrl();
 	void animCheck();

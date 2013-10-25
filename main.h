@@ -14,7 +14,8 @@
 #include "gb138/138_cfg.h"
 #include "gb138/gbCtrl.h"
 #include "gb138/menu138.h"
-#define VERSION "L1"
+
+#define VERSION "L2"
 
 config138 cfg;
 resources138 res;

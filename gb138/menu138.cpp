@@ -22,7 +22,6 @@ int menu138 :: start()
 {
 	pspDebugScreenPrintf("Starting graphics...\n");
 	this->startGl();
-
 	pspDebugScreenPrintf("Creating app list...\n");
 	this->updateGameList();
 	pspDebugScreenPrintf("Creating installer list...\n");
@@ -51,6 +50,13 @@ void menu138 :: loadEBOOT(const char * path)
 {
 	strcpy(ebootAddress, path);
 	active = 0;
+};
+
+void menu138 :: cefStart(entry138 * entry)
+{
+	#ifdef ARK
+	ark_launch(entry->getPath(), entry->getType(), entry->isPatched());
+	#endif
 };
 
 void menu138 :: setEbootAddress(char * address)
@@ -104,15 +110,18 @@ void menu138 :: printImg(Image * img, int x, int y)
 void menu138 :: updateGameList()
 {
 	game_list.FreeMemory();
+#ifdef CEF
+	hb_count = this->fillList(&game_list, "ms0:/ISO/", NULL, 0);
+#endif
 	if(gbExplorer::folderExist(cfg.appPath)!=gbExplorer::FILE_OK) gbExplorer::createFolder(cfg.appPath);
-	if(cfg.list_GAME) hb_count = this->fillList(&game_list, "ms0:/PSP/GAME/", NULL);
-	hb_count = this->fillList(&game_list, cfg.appPath, NULL);
+	if(cfg.list_GAME) hb_count = this->fillList(&game_list, "ms0:/PSP/GAME/", NULL, 1);
+	hb_count = this->fillList(&game_list, cfg.appPath, NULL, 1);
 };
 
 void menu138 :: updateInstallerList()
 {
 	installer_list.FreeMemory();
-	zip_count = this->fillList(&installer_list, INSTALLERS_PATH, ZIP_NAME);
+	zip_count = this->fillList(&installer_list, INSTALLERS_PATH, ZIP_NAME, 1);
 };
 
 void menu138 :: waitButtonsPressed()
@@ -149,8 +158,14 @@ void menu138 :: deleteItemFromSD(entry138 * entry)
 {
 	char * abs_delete = (char *)malloc(strlen(entry->getPath()));
 	strcpy(abs_delete, entry->getPath());
-	*(strrchr(abs_delete, '/')+1) = '\0';
-	gbExplorer::deleteFolder(abs_delete);
+	
+	if(entry->getType()==entry138::ISO) gbExplorer::deleteFile(abs_delete);
+	else
+	{
+		*(strrchr(abs_delete, '/')+1) = '\0';
+		gbExplorer::deleteFolder(abs_delete);
+	};
+	
 	free(abs_delete);
 	if(menu==GAMES) this->updateGameList();
 	else this->updateInstallerList();
@@ -348,8 +363,16 @@ void menu138 :: check()
 				if(menu==SETTINGS) this->settingsCtrl();
 				else if(count)
 				{
-					if(menu==GAMES) this->loadEBOOT(entry->getPath());
-					else this->setMessage(lang_msg_install[cfg.lang], entry->getName(), " ?", INSTALL_SELECTED);
+					if(entry->getType()!=entry138::INSTALLER_HB) 
+					{
+						#ifdef CEF
+							this->cefStart(entry);
+						#else
+							this->loadEBOOT(entry->getPath());
+						#endif
+					}
+					else
+						this->setMessage(lang_msg_install[cfg.lang], entry->getName(), " ?", INSTALL_SELECTED);
 				};
 			};
 			
@@ -513,19 +536,24 @@ void menu138 :: drawImages()
 	if(message_active) this->printImg(res.img[MENU_MESSAGE], 8, 200);
 };
 
-int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_name)
+int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_name, int append)
 {
 	SceUID dir;
 	SceIoDirent entry; 
 	tData new_node;
-	int i, found, error, count = list->GetCount();
-	char eboot_names[][15] = { "wmenu.bin\0", "FBOOT.PBP\0", "VBOOT.PBP\0", "CUSTOM\0"}, buffer[500];
+	int i, found, error, count = list->GetCount(), search_names = 4;
+	char eboot_names[][15] = { "wmenu.bin\0", "FBOOT.PBP\0", "VBOOT.PBP\0", "CUSTOM\0", "EBOOT.PBP\0"}, buffer[500];
 	entry138 * new_entry = NULL;
 
 	strcpy(eboot_names[3], cfg.appName);
 	memset(&entry, 0, sizeof(SceIoDirent));
+	
+#ifdef CEF
+	search_names = 5;
+#endif
+
 	dir = sceIoDopen(start);
-	if(dir>=0)
+	if(dir >= 0)
 	{
 		while((sceIoDread(dir, &entry) > 0))
 		{
@@ -533,36 +561,37 @@ int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_
 			found = -1;
 			strcpy(buffer, start);
 			strcat(buffer, entry.d_name);
-			strcat(buffer, "/");
 			
-			if(forced_name)
+			if(append)
 			{
-				strcat(buffer, forced_name);
-				if(gbExplorer::fileExist(buffer)==gbExplorer::FILE_OK) found = 4;
-			}
-			else
-				for(i=0;i<4;i++)
+				strcat(buffer, "/");
+				
+				if(forced_name)
 				{
-					strcpy(strrchr(buffer, '/')+1, eboot_names[i]);
-					if(gbExplorer::fileExist(buffer)==gbExplorer::FILE_OK)
+					strcat(buffer, forced_name);
+					if(gbExplorer::fileExist(buffer)==gbExplorer::FILE_OK) found = 5;
+				}
+				else
+					for(i=0;i<search_names;i++)
 					{
-						found = i;
-						break;
+						strcpy(strrchr(buffer, '/')+1, eboot_names[i]);
+						if(gbExplorer::fileExist(buffer)==gbExplorer::FILE_OK)
+						{
+							found = i;
+							break;
+						};
 					};
-				};
+			}
+			else if(gbExplorer::fileExist(buffer)==gbExplorer::FILE_OK) found = 6;
 				
 			if(found < 0) continue;
 			new_entry = new entry138();
 			new_node.entry = new_entry;
 			if(new_entry->create(buffer)==entry138::LOAD_ERROR) error = 1;
 			if(error || list->Add(&new_node)==gbAlloc::GBALLOC_NO_MEMORY) error = 1;
-			if(error)
-			{
-				delete new_entry;
-				continue;
-			};
+			if(error) delete new_entry;
+			else count++;
 			//__printf("%s\n", new_entry->getName());
-			count++;
 		};
 		sceIoDclose(dir);
 	};

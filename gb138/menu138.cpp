@@ -159,7 +159,7 @@ void menu138 :: deleteItemFromSD(entry138 * entry)
 	char * abs_delete = (char *)malloc(strlen(entry->getPath()));
 	strcpy(abs_delete, entry->getPath());
 	
-	if(entry->getType()==entry138::ISO) gbExplorer::deleteFile(abs_delete);
+	if(entry->getType()==entry138::ISO || entry->getType()==entry138::CSO) gbExplorer::deleteFile(abs_delete);
 	else
 	{
 		*(strrchr(abs_delete, '/')+1) = '\0';
@@ -506,14 +506,14 @@ void menu138 :: drawImages()
 
 	//Spheres drawing
 	this->printImg(res.img[MENU_CIRCLE], circlex-8, circley-10);
-	this->printImg(res.img[MENU_INS], circlex+60*cos(rotation+RD),circley+60*sin(rotation+RD));
-	this->printImg(res.img[MENU_JOY], circlex+60*cos(rotation),circley+60*sin(rotation));
-	this->printImg(res.img[MENU_SET], circlex+60*cos(rotation-RD),circley+60*sin(rotation-RD));
+	this->printImg(res.img[MENU_INS], circlex+CIRCLE_DISTANCE*cos(rotation+RD),circley+CIRCLE_DISTANCE*sin(rotation+RD));
+	this->printImg(res.img[MENU_JOY], circlex+CIRCLE_DISTANCE*cos(rotation),circley+CIRCLE_DISTANCE*sin(rotation));
+	this->printImg(res.img[MENU_SET], circlex+CIRCLE_DISTANCE*cos(rotation-RD),circley+CIRCLE_DISTANCE*sin(rotation-RD));
 
 	//Shperes shadow drawing
-	if(op!=SETTINGS || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+60*cos(rotation-RD),circley+60*sin(rotation-RD));
-	if(op!=GAMES || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+60*cos(rotation),circley+60*sin(rotation));
-	if(op!=INSTALL || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+60*cos(rotation+RD),circley+60*sin(rotation+RD));
+	if(op!=SETTINGS || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+CIRCLE_DISTANCE*cos(rotation-RD),circley+CIRCLE_DISTANCE*sin(rotation-RD));
+	if(op!=GAMES || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+CIRCLE_DISTANCE*cos(rotation),circley+CIRCLE_DISTANCE*sin(rotation));
+	if(op!=INSTALL || menu!=-1) this->printImg(res.img[MENU_BSHADOW], circlex+CIRCLE_DISTANCE*cos(rotation+RD),circley+CIRCLE_DISTANCE*sin(rotation+RD));
 
 	//List and bar drawing
 	this->printImg(res.img[MENU_LISTBACK], listx, 45);

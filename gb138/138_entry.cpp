@@ -86,6 +86,8 @@ int entry138 :: load(const char * file)
 		this->patched = iso.findFile("SYSDIR/EBOOT.OLD");
 		if(icon_offset) get_icon = 1;
 		iso.close();
+		if(!zipped_offset)
+			return entry138::LOAD_ERROR;
 	}
 	else if(this->type == entry138::CSO)
 	{
@@ -178,16 +180,19 @@ int entry138 :: parseSfo(const char * file, unsigned offset)
 		fseek(a, (sfo.entries-1-i) * sizeof(indexTable) + index.offset, 1);
 		fread(tmp, sizeof(tmp), 1, a);
 
-#ifdef CEF
+
 		if(this->type!=entry138::CSO && this->type!=entry138::ISO && !strcmp("CATEGORY", tmp))
 		{
 			unsigned cat = 0;
 			fseek(a, sfo.data_table + index.data_offset + offset, 0);
 			fread(&cat, sizeof(unsigned), 1, a);
 			if(cat==POPS_CATEG) this->type = entry138::POPS;
-			else if (cat==PSN_CATEG) this->type = entry138::PSN;
-		};
+			else if(cat==PSN_CATEG) this->type = entry138::PSN;
+#ifndef CEF
+			if(this->type!=entry138::HOMEBREW && this->type != entry138::INSTALLER_HB)
+				return entry138::PARSE_ERROR;
 #endif
+		};
 	
 		if(!strcmp("TITLE", tmp))
 		{
@@ -263,4 +268,41 @@ Image * entry138 :: getIcon()
 unsigned entry138 :: isPatched()
 {
 	return this->patched;
+};
+
+int entry138 :: sort_entry138(const void * a, const void * b)
+{
+	entry138 * c1 = (entry138 *)a;
+	entry138 * c2 = (entry138 *)b;
+	int prior1 = 0, prior2 = 0;
+	if(c1->getType()==entry138::HOMEBREW) prior1 = 3;
+	if(c1->getType()==entry138::POPS) prior1 = 2;
+	if(c1->getType()==entry138::PSN) prior1 = 1;
+	if(c1->getType()==entry138::ISO || c1->getType()==entry138::CSO) prior1 = 0;
+	
+	if(c2->getType()==entry138::HOMEBREW) prior2 = 3;
+	if(c2->getType()==entry138::POPS) prior2 = 2;
+	if(c2->getType()==entry138::PSN) prior2 = 1;
+	if(c2->getType()==entry138::ISO || c2->getType()==entry138::CSO) prior2 = 0;
+
+	return prior2-prior1;	
+};
+
+void entry138 :: setPath(const char * path)
+{
+	if(this->path) free(this->path);
+	this->path = (char *)malloc(strlen(path)+1);
+	strcpy(this->path, path);
+};
+
+void entry138 :: setName(const char * name)
+{
+	if(this->name) free(this->name);
+	this->name = (char *)malloc(strlen(name)+1);
+	strcpy(this->name, name);
+};
+
+void entry138 :: setType(int type)
+{
+	this->type = type;
 };

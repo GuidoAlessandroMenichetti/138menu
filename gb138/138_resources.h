@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "138_cfg.h"
+#include "gbExp.h"
 
 extern config138 cfg;
 
@@ -15,8 +16,9 @@ extern "C"
 #include "../graphics/intraFont.h"
 }
 
-#define IMAG_FILE "DATA.138"
-#define FONT_FILE "LTN9.PGF"
+//#define IMAG_FILE "DATA.138"
+//#define FONT_FILE "LTN9.PGF"
+#define FONT_FILE "FONT.TMP"
 
 enum IMAGE_IDS
 {
@@ -61,15 +63,19 @@ class resources138
 	
 	int start();
 	void clear();
+	void clearFont();
+	void clearImages();
+	int loadTheme();
+	void loadCustomBackground();
 	resources138();
 	
 	Image * img[IMAGE_COUNT];
 	intraFont * font;
 	
 	private:
-	int loadImages();
+	int loadImages(const char * file);
 	int loadFont();
-	unsigned search(const char * filename);
+	unsigned search(const char * filename, const char * package, const char * extract);
 };
 
 #endif

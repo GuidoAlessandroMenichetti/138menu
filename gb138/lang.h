@@ -85,44 +85,6 @@ const char lang_msg_options[][2][13] =
 	{"Evet", 		"Hayir"},
 	{"Potwierdz", 	"Anuluj"}
 };
-const char lang_settings[][9][45] =
-{
-	{
-		"Language", 				"Load homebrew icon", 		"Load installer icon", 
-		"Installer load mode", 		"Install as...", 			"Install to...", 
-		"List /GAME/ homebrew", 	"Clean Homebrew folder", 	"Restore defaults...", 
-	},
-	
-	{
-		"Sprache", 					"Zeige Homebrew Symbol", 	"Zeige Installer Symbol", 
-		"Installer Lademodus", 		"Installiere als...", 		"Installiere nach...", 
-		"Liste /GAME/ Homebrews", 	"Leere Homebrew Ordner",	"Einstellungen zuruecksetzen..."
-	},
-	
-	{
-		"Idioma", 							"Cargar imagen de aplicacion", 	"Cargar imagen de instalador", 
-		"Modo de carga de instaladores", 	"Instalar como...",				"Instalar en...", 
-		"Listar aplicaciones de /GAME/", 	"Limpiar carpeta de homebrew",	"Restablecer por defecto...", 
-	},
-	
-	{
-		"Langue", 								"Chargez l'icone d'application", 		"Chargez l'icone d'installation", 
-		"Installez mode de chargement", 		"Installez comme...", 					"Installez a...",
-		"Listez app jeux fait maison /GAME/", 	"Nettoyez dossier Homebrew",			"Restituez les parametre de defauts..."	
-	},
-	
-	{
-		"Dil", 						"Homebrew Resmi Goster", 	"Yukleme Resmi Goster", 
-		"Yukleme Modu", 			"Yukleme ismi...", 			"Yukleme Yeri...", 
-		"/GAME/ Homebrew Goster", 	"Homebrew klasoru temizle",	"Ayarlari Sifirla..."
-	},
-	
-	{
-		"Jezyk", 							"Wczytuj ikony dla homebrewow", 	"Wczytuj ikony dla instalatorow", 
-		"Tryb wczytywania instalatorow", 	"Zainstaluj jako...", 				"Zainstaluj w...", 
-		"Lista aplikacji z /GAME/", 		"Oczyscic Homebrew folderu", 		"Przywroc ustawienia domyslne...", 
-	},
-};
 const char lang_settings_yesno[][2][10] = 
 {
 	{"No", 		"Yes"},
@@ -140,6 +102,92 @@ const char lang_settings_modes[][2][20] =
 	{"Exact", "Vite"},
 	{"Konturollu", "Hizli"},
 	{"Dokladny", "Szybki"}
+};
+const char lang_settings[][11][45] =
+{
+	{
+		"Language", 
+		"Load homebrew icon", 
+		"Load installer icon", 
+		"Installer load mode", 
+		"Install as...", 
+		"Install to...", 
+		"List /GAME/ homebrew", 
+		"Theme",
+		"Background",
+		"Clean Homebrew folder", 
+		"Restore defaults", 
+	},
+	
+	{
+		"Sprache", 
+		"Zeige Homebrew Symbol", 
+		"Zeige Installer Symbol", 
+		"Installer Lademodus", 
+		"Installiere als...", 
+		"Installiere nach...", 
+		"Liste /GAME/ Homebrews",
+		"Theme",
+		"Hintergrund",
+		"Leere Homebrew Ordner",
+		"Einstellungen zuruecksetzen"
+	},
+	
+	{
+		"Idioma", 
+		"Cargar imagen de aplicacion", 
+		"Cargar imagen de instalador", 
+		"Modo de carga de instaladores",
+		"Instalar como...",
+		"Instalar en...", 
+		"Listar aplicaciones de /GAME/",
+		"Tema",
+		"Fondo",
+		"Limpiar carpeta de homebrew",
+		"Restablecer por defecto", 
+	},
+	
+	{
+		"Langue", 
+		"Chargez l'icone d'application",
+		"Chargez l'icone d'installation", 
+		"Installez mode de chargement",
+		"Installez comme...",
+		"Installez a...",
+		"Listez jeux fait maison /GAME/",
+		"Theme",
+		"Fond d'ecran",
+		"Nettoyez dossier Homebrew",
+		"Restituez les parametre de defauts"	
+	},
+	
+	{
+		"Dil", 
+		"Homebrew Resmi Goster", 
+		"Yukleme Resmi Goster", 
+		"Yukleme Modu",
+		"Yukleme ismi...", 
+		"Yukleme Yeri...", 
+		"/GAME/ Homebrew Goster",
+		"Temalar",
+		"Arkapilan",
+		"Homebrew klasoru temizle",
+		"Ayarlari Sifirla"
+	},
+	
+	{
+		"Jezyk", 
+		"Wczytuj ikony dla homebrewow", 
+		"Wczytuj ikony dla instalatorow", 
+		"Tryb wczytywania instalatorow", 
+		"Zainstaluj jako...", 
+		"Zainstaluj w...", 
+		"Lista aplikacji z /GAME/", 
+		"Styl",
+		"Tla",
+		"Oczyscic Homebrew folderu",
+		"Przywroc ustawienia domyslne", 
+	},
 };
 
 #endif

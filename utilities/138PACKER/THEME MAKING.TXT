@@ -1,0 +1,19 @@
+Creating a theme for 138Menu is quite easy, just replace all the image files in this folder and (optionally) 
+replace the font file (FONT.PGF) and pack it by launching PACK_win.exe
+If you are modding the menu and you need more files just add them on CONFIG.CFG (always leaving an empty line
+at the end)
+
+	- Since L3
+	Now every theme can have its own font. If you don't include the FONT.PGF file in the package 
+	(by removing it from CONFIG.CFG), then the menu will load the default one inside DATA.138.
+
+
+The .138 package format is the following:
+	
+	unsigned file_count; 
+	//Repeat file_count times:
+	{
+		unsigned file_size;
+		char name[20];
+		/** data (file_size bytes) **/
+	}

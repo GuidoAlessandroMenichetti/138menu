@@ -4,10 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../config.h"
 
-#define CFG_FILE "138CFG.TXT"
-#define DEFAULT_PATH "ms0:/PSP/VHBL/"
-#define DEFAULT_NAME "wmenu.bin"
 #define DEFAULT_BACK "DEFAULT"
 
 class config138
@@ -25,7 +23,9 @@ class config138
 	void makeDefault();
 	void setInstallPath(const char * str);
 	void setAppName(const char * str);
-
+	void setCustomTheme(const char * str);
+	void setBackground(const char * str);
+	
 	char * appPath;
 	char * appName;
 	int lang;
@@ -34,6 +34,7 @@ class config138
 	int load_mode;
 	int use_wall;
 	char * custom_wall;
+	char * custom_theme;
 	int list_GAME;   
 };
 

@@ -16,36 +16,41 @@ void config138 :: save()
 	FILE * a;
 	a = fopen(CFG_FILE, "wb");
 	fprintf(a,
-"PATH=%s\r\n\
+"#138Menu L3\r\n\
+PATH=%s\r\n\
 RENAME=%s\r\n\
 LANG=%d\r\n\
 APPICON=%d\r\n\
 PKGICON=%d\r\n\
 LOADMODE=%d\r\n\
 GAMEFOLDER=%d\r\n\
-USEWALL=%s\r\n",
+USEWALL=%s\r\n\
+USETHEME=%s\r\n",
 	this->appPath, this->appName, this->lang, this->app_icon, this->zip_icon,
-	this->load_mode, this->list_GAME, this->custom_wall);
+	this->load_mode, this->list_GAME, this->custom_wall, this->custom_theme);
 	fclose(a);
 };
 
 void config138 :: makeDefault()
 {
-	if(this->appPath) free(this->appPath);
-	if(this->appName) free(this->appName);
-	if(this->custom_wall) free(this->custom_wall);
+	this->clear();
 	this->appPath = (char*)malloc(strlen(DEFAULT_PATH)+1);
 	this->appName = (char*)malloc(strlen(DEFAULT_NAME)+1);
 	this->custom_wall = (char*)malloc(strlen(DEFAULT_BACK)+1);
+	this->custom_theme = (char*)malloc(strlen(DEFAULT_THEME)+1);
 
 	this->lang = 0;
 	this->zip_icon = 1;
 	this->app_icon = 1;
 	this->load_mode = 0;
 	this->list_GAME = 0;
+#ifdef CEF
+	this->list_GAME = 1;
+#endif
 	strcpy(this->appPath, DEFAULT_PATH);
 	strcpy(this->appName, DEFAULT_NAME);
 	strcpy(this->custom_wall, DEFAULT_BACK);
+	strcpy(this->custom_theme, DEFAULT_THEME);
 };
 
 int config138 :: load()
@@ -83,7 +88,13 @@ int config138 :: load()
 			c++;
 			this->custom_wall = (char*)malloc(strlen(buffer+8)+1);
 			sscanf(buffer+8, "%s", this->custom_wall);
-		}
+		};
+		if(!strncmp(buffer, "USETHEME=", 9))
+		{
+			c++;
+			this->custom_theme = (char*)malloc(strlen(buffer+9)+1);
+			sscanf(buffer+9, "%s", this->custom_theme);
+		};
 		if(!strncmp(buffer, "LANG=", 5))
 		{
 			c++;
@@ -112,7 +123,7 @@ int config138 :: load()
 		};
 	};
 	fclose(a);
-	if(c!=8) return config138::CORRUPT;
+	if(c!=9) return config138::CORRUPT;
 	if(strncmp("ms0:/", this->appPath, 5)) return config138::CORRUPT;
 	unsigned len = strlen(this->appPath);
 	if(this->appPath[len-1]!='/') 
@@ -133,6 +144,7 @@ config138 :: config138()
 	this->appName = NULL;
 	this->appPath = NULL;
 	this->custom_wall = NULL;
+	this->custom_theme = NULL;
 };
 
 void config138 :: clear()
@@ -140,6 +152,7 @@ void config138 :: clear()
 	if(this->appName) free(this->appName);
 	if(this->appPath) free(this->appPath);
 	if(this->custom_wall) free(this->custom_wall);
+	if(this->custom_theme) free(this->custom_theme);
 };
 
 void config138 :: setAppName(const char * str)
@@ -155,3 +168,18 @@ void config138 :: setInstallPath(const char * str)
 	this->appPath = (char *)malloc(strlen(str)+1);
 	strcpy(this->appPath, str);
 };
+
+void config138 :: setCustomTheme(const char * str)
+{
+	if(this->custom_theme) free(this->custom_theme);
+	this->custom_theme = (char *)malloc(strlen(str)+1);
+	strcpy(this->custom_theme, str);
+};
+
+void config138 :: setBackground(const char * str)
+{
+	if(this->custom_wall) free(this->custom_wall);
+	this->custom_wall = (char *)malloc(strlen(str)+1);
+	strcpy(this->custom_wall, str);
+};
+

@@ -65,6 +65,32 @@ void gbAlloc :: FreeMemory()
 	this->Create();
 };
 
+void gbAlloc :: Sort(int (* comparation)(const void * a, const void * b))
+{
+	int flag = 1;
+	node * f = this->start, ** s, * aux;
+	if(f)
+	{
+		while(flag)
+		{
+			flag = 0;
+			s = &this->start;
+			while((*s)->next)
+			{
+				if(comparation((*s)->data.entry, (*s)->next->data.entry)<0)
+				{
+					flag = 1;
+					aux = (*s);
+					(*s) = aux->next;
+					aux->next = (*s)->next;
+					(*s)->next = aux;
+				};
+				s = &(*s)->next;
+			};
+		};
+	};	
+};
+
 int gbAlloc :: GetCount()
 {
 	return this->count;

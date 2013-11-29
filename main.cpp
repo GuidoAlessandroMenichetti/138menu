@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 void finish()
 {
 	cfg.clear();
@@ -13,7 +12,19 @@ int begin()
 	pspDebugScreenInit();
 	pspDebugScreenClear();
 	
-	pspDebugScreenPrintf("Starting 138Menu %s by GUIDOBOT\n", VERSION);
+	const char * build;
+#ifdef ARK
+	build = BUILD_ARK;
+#else
+#ifdef TN
+	build = BUILD_TN;
+#else
+	build = BUILD_VHBL;
+#endif
+#endif	
+
+	
+	pspDebugScreenPrintf("Starting 138Menu %s [%s] by GUIDOBOT\n", VERSION, build);
 	pspDebugScreenPrintf("Loading config file\n");
 	
 	if(cfg.start()==config138::GENERATED)
@@ -22,7 +33,7 @@ int begin()
 	pspDebugScreenPrintf("Loading menu resources...\n");
 	if(res.start()==resources138::RESOURCES_ERROR)
 	{
-		pspDebugScreenPrintf("Resources missing/invalid!\n");
+		pspDebugScreenPrintf("ERROR: Resources missing/invalid!\n");
 		sceKernelDelayThread(3000000);
 		return 0;
 	};
@@ -39,7 +50,7 @@ int main(int argc, char * argv[])
 	if(argc>1)
 	{
 		char * hex = argv[1];
-        *(hex + 8 ) = 0;
+        *(hex + 8) = 0;
         apiAddr = xstrtoi(hex, 8);	
 	};
 	
@@ -49,10 +60,14 @@ int main(int argc, char * argv[])
 		ebootPath = settings->filename;
 	};
 
+	
 	if(begin())
 	{
 		menu138 menu;
+#ifndef CEF
 		menu.setEbootAddress(ebootPath);
+#endif
+		menu.setExploitPath(argv[0]);
 		menu.start();
 	};
 

@@ -14,13 +14,14 @@ class gbAlloc
 {
     public:
 
-	enum GBALLOC_ERRORS {GBALLOC_SUCCESS, GBALLOC_NO_MEMORY=-1, GBALLOC_NO_DATA=-2, GBALLOC_NOT_FOUND=-3};
+	enum GBALLOC_ERRORS {GBALLOC_SUCCESS = 0, GBALLOC_NO_MEMORY=-1, GBALLOC_NO_DATA=-2, GBALLOC_NOT_FOUND=-3};
 
 	void Create();
 	int Add(const tData *);
 	tData * Get(unsigned);
 	int GetCount();
 	void FreeMemory();
+	void Sort(int (* comparation)(const void * a, const void * b));
 	gbAlloc();
 	~gbAlloc();
 
@@ -28,6 +29,7 @@ class gbAlloc
 
 	node * start;
 	int count;
+	//void (* clean_function)(const void * n);
 };
 
 

@@ -12,7 +12,7 @@
 #define FILE_MAGIC 			0x04034b50
 #define CENTRAL_DIR_MAGIC 	0x02014b50
 #define CENTRAL_END_MAGIC 	0x06054b50
-#define COPYING_BUFFER 		2000
+#define COPYING_BUFFER 		4096
 
 typedef struct 
 {
@@ -33,6 +33,7 @@ class gbZip
 	static unsigned getEbootOffset(const char * file);
 	static int unzip(const char * file, const char * root, const char * eboot_name);
 	static void fixname(char * name);
+	static void printInfo(const char * root, const char * entry_name);
 };
 
 #endif

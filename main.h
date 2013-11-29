@@ -8,14 +8,13 @@
 
 #include <pspkernel.h>
 #include <pspdebug.h>
+#include "config.h"
 #include "other/vhblBoot.h"
 #include "other/callbacks.h"
-#include "gb138/resources_138.h"
+#include "gb138/138_resources.h"
 #include "gb138/138_cfg.h"
 #include "gb138/gbCtrl.h"
-#include "gb138/menu138.h"
-
-#define VERSION "L2"
+#include "gb138/138_menu.h"
 
 config138 cfg;
 resources138 res;

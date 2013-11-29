@@ -28,6 +28,15 @@ int gbExplorer :: createFolder(const char * path)
 	return gbExplorer::ERROR;
 };
 
+int gbExplorer :: createDummy(const char * path)
+{
+	FILE * a;
+    a = fopen(path, "wb");
+    if(!a) return gbExplorer::ERROR;
+    fclose(a);
+	return gbExplorer::FILE_OK;
+};
+
 int gbExplorer :: deleteFile(const char * path)
 {
 	if(sceIoRemove(path)>=0) return gbExplorer::DELETED;
@@ -39,13 +48,18 @@ int gbExplorer :: deleteFolder(const char * path)
 	SceUID d; 
 	SceIoDirent entry;
 
+	memset(&entry, 0, sizeof(SceIoDirent));
 	d = sceIoDopen(path);
 	if(d>=0)
 	{
 		char * new_path = (char *)malloc(strlen(path)+100);
 		while((sceIoDread(d, &entry) > 0))
 		{
-			if (!strcmp(".", entry.d_name) || !strcmp("..", entry.d_name)) continue;
+			if (!strcmp(".", entry.d_name) || !strcmp("..", entry.d_name)) 
+			{
+				memset(&entry, 0, sizeof(SceIoDirent));
+				continue;
+			};
 			
 			strcpy(new_path, path);
 			strcat(new_path, entry.d_name);
@@ -61,4 +75,16 @@ int gbExplorer :: deleteFolder(const char * path)
 	};
 
 	return gbExplorer::DELETED;
+};
+
+int gbExplorer :: isDir(const char * path)
+{
+	SceUID dir;
+	dir = sceIoDopen(path);
+	if(dir >= 0)
+	{
+		sceIoDclose(dir);
+		return 1;
+	};
+	return 0;
 };

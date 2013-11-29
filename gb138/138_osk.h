@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "gbCtrl.h"
-#include "resources_138.h"
+#include "138_resources.h"
 extern "C"
 {
 #include "../graphics/graphics.h"

@@ -1,7 +1,9 @@
-#include "menu138.h"
+#include "138_menu.h"
 
 menu138 :: menu138()
 {
+	ebootAddress = NULL;
+	exploitPath = NULL;
 	op = GAMES; //Initial menu
 	active = 1;
 	menu = -1;
@@ -18,6 +20,18 @@ menu138 :: menu138()
 	press_time = 0;
 };
 
+void menu138 :: setExploitPath(const char * path)
+{
+	this->exploitPath = (char *)malloc(strlen(path)+1);
+	strcpy(this->exploitPath, path);
+	* (strrchr(this->exploitPath, '/')+1) = '\0';
+};
+
+void menu138 :: setEbootAddress(char * address)
+{
+	ebootAddress = address;
+};
+
 int menu138 :: start()
 {
 	pspDebugScreenPrintf("Starting graphics...\n");
@@ -26,6 +40,11 @@ int menu138 :: start()
 	this->updateGameList();
 	pspDebugScreenPrintf("Creating installer list...\n");
 	this->updateInstallerList();
+	
+	pspDebugScreenPrintf("Creating theme list...\n");
+	this->loadFiles(this->exploitPath, ".138", &themes, DEFAULT_THEME, NULL, cfg.custom_theme);
+	pspDebugScreenPrintf("Creating wallpaper list...\n");
+	this->loadFiles(this->exploitPath, ".PNG", &wallpapers, "DEFAULT", "ICON", cfg.custom_wall);
 
 	while(active)
 	{
@@ -40,13 +59,14 @@ int menu138 :: start()
 		ctrl.flush();
 	};
 
+	if(this->exploitPath) free(this->exploitPath);
 	game_list.FreeMemory();
 	installer_list.FreeMemory();
 	this->killGl();
 	return menu138::MENU_OK;
 };
 
-void menu138 :: loadEBOOT(const char * path)
+void menu138 :: loadEBOOT(const char * path) //for vhbl
 {
 	strcpy(ebootAddress, path);
 	active = 0;
@@ -54,14 +74,72 @@ void menu138 :: loadEBOOT(const char * path)
 
 void menu138 :: cefStart(entry138 * entry)
 {
-	#ifdef ARK
-	ark_launch(entry->getPath(), entry->getType(), entry->isPatched());
-	#endif
+#ifdef CEF
+
+#ifdef TN 
+	if(entry->getType() == entry138::ISO || entry->getType() == entry138::CSO) return;
+#endif
+	
+	char * tmp_path = (char *)malloc(strlen(entry->getPath())+1);
+	int patched = entry->isPatched(),
+	type = entry->getType();
+	strcpy(tmp_path, entry->getPath());
+	
+	game_list.FreeMemory();
+	installer_list.FreeMemory();
+	res.clear();
+	cfg.clear();
+	
+	cef_launch(tmp_path, type, patched);
+#endif
 };
 
-void menu138 :: setEbootAddress(char * address)
+void menu138 :: loadFiles(const char * path, const char * extension, files * store, const char * def, const char * invalid, const char * compare)
 {
-	ebootAddress = address;
+	SceUID dir;
+	SceIoDirent entry; 
+	
+	strcpy(store->name[0], def);
+	store->count = 1;
+	store->selected = 0;
+	store->restore = 0;
+	
+	memset(&entry, 0, sizeof(SceIoDirent));
+	if(path)
+	{
+		dir = sceIoDopen(path);
+		if(dir >= 0)
+		{
+			while(store->count < MAX_FILES && (sceIoDread(dir, &entry) > 0))
+			{
+				if(!strcmp(".", entry.d_name) || !strcmp("..", entry.d_name)) 
+				{
+					memset(&entry, 0, sizeof(SceIoDirent));
+					continue;
+				};
+				
+				char * exten = strrchr(entry.d_name, '.');
+				if(!exten) continue;
+				if(!strcmp(exten, extension))
+				{
+					if(invalid)
+						if(!strncmp(invalid, entry.d_name, strlen(invalid))) continue;
+					
+					if(strcmp(entry.d_name, def))
+					{
+						strcpy(store->name[store->count], entry.d_name);
+						if(!strcmp(entry.d_name, compare))
+						{
+							store->selected = store->count;
+							store->restore = store->selected;
+						};
+						store->count++;
+					};
+				};
+			};
+			sceIoDclose(dir);
+		};
+	};
 };
 
 void menu138 :: startGl()
@@ -111,17 +189,22 @@ void menu138 :: updateGameList()
 {
 	game_list.FreeMemory();
 #ifdef CEF
-	hb_count = this->fillList(&game_list, "ms0:/ISO/", NULL, 0);
+	hb_count = this->fillList(&game_list, "ms0:/ISO/", NULL, 0, 0);
+	if(this->exploitPath) hb_count = this->fillList(&game_list, this->exploitPath, NULL, 0, 1);
 #endif
+
 	if(gbExplorer::folderExist(cfg.appPath)!=gbExplorer::FILE_OK) gbExplorer::createFolder(cfg.appPath);
-	if(cfg.list_GAME) hb_count = this->fillList(&game_list, "ms0:/PSP/GAME/", NULL, 1);
-	hb_count = this->fillList(&game_list, cfg.appPath, NULL, 1);
+	if(cfg.list_GAME && strcmp(cfg.appPath, "ms0:/PSP/GAME/")) 
+		hb_count = this->fillList(&game_list, "ms0:/PSP/GAME/", NULL, 1, 0);
+	
+	hb_count = this->fillList(&game_list, cfg.appPath, NULL, 1, 0);
+	if(hb_count > 1) game_list.Sort(entry138::sort_entry138);
 };
 
 void menu138 :: updateInstallerList()
 {
 	installer_list.FreeMemory();
-	zip_count = this->fillList(&installer_list, INSTALLERS_PATH, ZIP_NAME, 1);
+	zip_count = this->fillList(&installer_list, INSTALLERS_PATH, ZIP_NAME, 1, 0);
 };
 
 void menu138 :: waitButtonsPressed()
@@ -137,6 +220,8 @@ void menu138 :: roll(int dir)
 	if(op<0) op = 2; 
 	else if(op>2) op = 0;
 	list_option = offset = 0;
+	themes.selected = themes.restore;
+	wallpapers.selected = wallpapers.restore;
 };
 
 int menu138 :: animating()
@@ -157,13 +242,24 @@ void menu138 :: setMessage(const char * caption, const char * cat1, const char *
 void menu138 :: deleteItemFromSD(entry138 * entry)
 {
 	char * abs_delete = (char *)malloc(strlen(entry->getPath()));
+	char * aux;
 	strcpy(abs_delete, entry->getPath());
 	
 	if(entry->getType()==entry138::ISO || entry->getType()==entry138::CSO) gbExplorer::deleteFile(abs_delete);
 	else
 	{
-		*(strrchr(abs_delete, '/')+1) = '\0';
-		gbExplorer::deleteFolder(abs_delete);
+		aux = strrchr(abs_delete, '/');
+		if(aux)
+		{
+			*(aux+1) = '\0';
+			if(strcmp(this->exploitPath, abs_delete))
+				gbExplorer::deleteFolder(abs_delete);
+			else
+			{
+				*(aux+1) = ZIP_NAME[0];
+				gbExplorer::deleteFile(abs_delete);
+			};
+		};
 	};
 	
 	free(abs_delete);
@@ -183,9 +279,29 @@ void menu138 :: doAction(int action_code)
 			this->deleteItemFromSD(entry);
 		break;
 		case FORMAT_HBFOLDER:
-			gbExplorer::deleteFolder(cfg.appPath);
-			gbExplorer::createFolder(cfg.appPath);
-			this->updateGameList();
+			if(strcmp(cfg.appPath, "ms0:/PSP/GAME/"))
+			{
+				gbExplorer::deleteFolder(cfg.appPath);
+				gbExplorer::createFolder(cfg.appPath);
+				this->updateGameList();
+			};
+		break;
+		case RESTORE_DEFAULTS:
+			if(themes.selected)
+			{
+				cfg.setCustomTheme(DEFAULT_THEME);
+				res.loadTheme();
+			};
+			if(wallpapers.selected)
+			{
+				cfg.setBackground("DEFAULT");
+				res.loadCustomBackground();
+			};
+			themes.selected = themes.restore = 0;
+			wallpapers.selected = wallpapers.restore = 0;
+			cfg.makeDefault();
+			cfg.save();
+			return;
 		break;
 	};
 	offset = 0;
@@ -211,13 +327,13 @@ void menu138 :: settingsCtrl()
 			if(++cfg.lang==config138::LANG_COUNT) cfg.lang = 0;
 		break;
 		case 1: //App icon load
-			cfg.app_icon = cfg.app_icon? 0: 1;
+			TOGGLE(cfg.app_icon);
 		break;
 		case 2: //Zip icon load
-			cfg.zip_icon = cfg.zip_icon? 0: 1;
+			TOGGLE(cfg.zip_icon);
 		break;
 		case 3: //Load mode
-			cfg.load_mode = cfg.load_mode? 0: 1;
+			TOGGLE(cfg.load_mode);
 		break;
 		case 4: //Install name
 			osk.activate(lang_settings[cfg.lang][4], cfg.appName, MAX_EBOOT_NAME);
@@ -236,13 +352,29 @@ void menu138 :: settingsCtrl()
 			};
 		break;
 		case 6: //List /GAME/ apps
-			cfg.list_GAME = cfg.list_GAME? 0: 1;
+			TOGGLE(cfg.list_GAME);
 		break;
-		case 7: //Clean apps folder
+		case 7: //Theme
+			if(strcmp(themes.name[themes.selected], cfg.custom_theme))
+			{
+				cfg.setCustomTheme(themes.name[themes.selected]);
+				res.loadTheme();
+				themes.restore = themes.selected;
+			};
+		break;
+		case 8: //Background
+			if(strcmp(wallpapers.name[wallpapers.selected], cfg.custom_wall))
+			{
+				cfg.setBackground(wallpapers.name[wallpapers.selected]);
+				res.loadCustomBackground();
+				wallpapers.restore = wallpapers.selected;
+			};
+		break;
+		case 9: //Clean apps folder
 			this->setMessage(lang_msg_delete[cfg.lang], cfg.appPath, " ?", FORMAT_HBFOLDER);
 		break;
-		case 8: //Make defaults
-			cfg.makeDefault();
+		case 10: //Make defaults
+			this->setMessage(lang_settings[cfg.lang][10], NULL, " ?", RESTORE_DEFAULTS);
 		break;
 	};
 	cfg.save();
@@ -350,12 +482,39 @@ void menu138 :: check()
 				title_move=-1; 	titleTo = -110;
 				list_move=-1; 	listTo=93;
 				list_option=0; 	offset = 0;
+				themes.selected = themes.restore;
+				wallpapers.selected = wallpapers.restore;
 			};	
 		}
 		else
 		{
 			int count = menu==GAMES? hb_count: menu==INSTALL? zip_count: SETTINGS_COUNT;
 			entry138 * entry = this->actualEntry(menu, list_option);
+			
+			
+			if(menu==SETTINGS)
+			{
+				if(ctrl.getCtrl()->up || ctrl.getCtrl()->down)
+				{
+					themes.selected = themes.restore;
+					wallpapers.selected = wallpapers.restore;
+				};
+				
+				if(list_option == 7) //Pressed left or right in Theme
+				{
+					if(ctrl.getCtrl()->left)
+						if(--themes.selected<0) themes.selected = themes.count-1;
+					if(ctrl.getCtrl()->right)
+						if(++themes.selected==themes.count) themes.selected = 0;
+				}
+				else if(list_option == 8) //Pressed left or right in Background
+				{
+					if(ctrl.getCtrl()->left)
+						if(--wallpapers.selected<0) wallpapers.selected = wallpapers.count-1;
+					if(ctrl.getCtrl()->right)
+						if(++wallpapers.selected==wallpapers.count) wallpapers.selected = 0;
+				};
+			};
 			
 			if(ctrl.getCtrl()->cross) //Press cross in any submenu
 			{
@@ -387,8 +546,7 @@ void menu138 :: check()
 				}
 				else list_option = offset = 0;
 			};
-			
-			
+						
 			if(ctrl.getCtrl()->up) //Press up in any submenu
 			{
 				if(list_option>0)
@@ -443,6 +601,7 @@ void menu138 :: drawText()
 	if(this->animating()) return;
 	if(menu==SETTINGS) //Settings menu draw
 	{
+		char aux_name[MAX_FILE_NAME];
 		if(!message_active) printText(CREDITS, 107, 242, GREY, WHITE, SIZE_LITTLE);
 		for(int i=0;i<SETTINGS_COUNT;i++)
 		{
@@ -457,6 +616,19 @@ void menu138 :: drawText()
 		printText(cfg.appName, 380, 110, GREY, BLACK, SIZE_LITTLE);
 		printText(strchr(cfg.appPath, '/'), 380, 122, GREY, BLACK, SIZE_LITTLE);
 		printText(lang_settings_yesno[cfg.lang][cfg.list_GAME], 380, 134, GREY, BLACK, SIZE_LITTLE);
+		
+		if(!themes.selected) printText("DEFAULT", 380, 146, GREY, BLACK, SIZE_LITTLE);
+		else 
+		{
+			strcpy(aux_name, themes.name[themes.selected]);
+			* strrchr(aux_name, '.') = '\0';
+			printText(aux_name, 380, 146, GREY, BLACK, SIZE_LITTLE);
+		};
+		
+		strcpy(aux_name, wallpapers.name[wallpapers.selected]);
+		if(strcmp(DEFAULT_BACK, wallpapers.name[wallpapers.selected]))
+			* strrchr(aux_name, '.') = '\0';
+		printText(aux_name, 380, 158, GREY, BLACK, SIZE_LITTLE);
 	}
 	else //Other menus draw
 	{
@@ -517,7 +689,7 @@ void menu138 :: drawImages()
 
 	//List and bar drawing
 	this->printImg(res.img[MENU_LISTBACK], listx, 45);
-	this->printImg(res.img[MENU_BAR], circlex+145, circley+titley+23);
+	this->printImg(res.img[MENU_BAR], circlex+147, circley+titley+23);//145
 
 	//Game icon back square and icon drawing
 	if(!this->animating() && (menu==GAMES? cfg.app_icon: cfg.zip_icon) && menu>0 && menu!=SETTINGS)
@@ -536,7 +708,7 @@ void menu138 :: drawImages()
 	if(message_active) this->printImg(res.img[MENU_MESSAGE], 8, 200);
 };
 
-int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_name, int append)
+int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_name, int append, int ONLY_ISOS)
 {
 	SceUID dir;
 	SceIoDirent entry; 
@@ -557,6 +729,12 @@ int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_
 	{
 		while((sceIoDread(dir, &entry) > 0))
 		{
+			if(!strcmp(".", entry.d_name) || !strcmp("..", entry.d_name)) 
+			{
+				memset(&entry, 0, sizeof(SceIoDirent));
+				continue;
+			};
+			
 			error = 0;
 			found = -1;
 			strcpy(buffer, start);
@@ -588,8 +766,13 @@ int menu138 :: fillList(gbAlloc * list, const char * start, const char * forced_
 			new_entry = new entry138();
 			new_node.entry = new_entry;
 			if(new_entry->create(buffer)==entry138::LOAD_ERROR) error = 1;
+			if(error || (ONLY_ISOS && (new_entry->getType()!=entry138::ISO && new_entry->getType()!=entry138::CSO))) error = 1;
 			if(error || list->Add(&new_node)==gbAlloc::GBALLOC_NO_MEMORY) error = 1;
-			if(error) delete new_entry;
+			if(error) 
+			{
+				new_entry->clear();
+				delete new_entry;
+			}
 			else count++;
 			//__printf("%s\n", new_entry->getName());
 		};

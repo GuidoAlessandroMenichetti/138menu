@@ -22,18 +22,27 @@ void gbZip :: fixname(char * name)
 	};
 };
 
+void gbZip :: printInfo(const char * root, const char * entry_name)
+{
+	pspDebugScreenSetXY(0, 0);
+	__printf("INSTALLING...\n");
+	pspDebugScreenSetXY(0, 2);
+	__printf("DESTINATION: %s\n", root);
+};
+
 int gbZip :: unzip(const char * file, const char * root, const char * eboot_name)
 {
 	structLocalFileHeader fileHeader;
 	FILE * a, * b;
-	int centralDirFound = 0, copy_count = 0;
+	int centralDirFound = 0, copy_count = 0, print_y = 0;
 	char * save_path = NULL, * entry_name = NULL, copy_buffer[COPYING_BUFFER];
 	unsigned magic_check, i;
 	memset(&fileHeader, 0, sizeof(structLocalFileHeader));
 
 	a = fopen(file, "rb");
 	fseek(a, 0, SEEK_SET);
-
+	pspDebugScreenInit();
+	
 	while(!centralDirFound)
 	{
 		fread(&magic_check, sizeof(unsigned), 1, a);
@@ -57,19 +66,14 @@ int gbZip :: unzip(const char * file, const char * root, const char * eboot_name
 			strcpy(save_path, root);
 			strcat(save_path, entry_name);
 			
-			pspDebugScreenInit();
-			pspDebugScreenClear();
-			pspDebugScreenSetXY(0, 0);
-			__printf("Copying file: %s\n", save_path);
-			
 			if(*(entry_name+strlen(entry_name)-1)=='/') //Is it a folder?
 			{
-				__printf("Creating folder: %s", save_path);
-				if(gbExplorer::createFolder(save_path)==gbExplorer::ERROR)
-				{
-					fclose(a);
-					return gbZip::ZIP_ERROR;
-				};
+				pspDebugScreenClear();
+				gbZip::printInfo(root, entry_name);
+				pspDebugScreenSetXY(0, 4);
+				__printf("  /%s...", entry_name);
+				print_y = 0;
+				gbExplorer::createFolder(save_path);
 			}
 			else //Is it a file?
 			{
@@ -77,22 +81,48 @@ int gbZip :: unzip(const char * file, const char * root, const char * eboot_name
 				if(!b)
 				{
 					fclose(a);
+					pspDebugScreenClear();
+					pspDebugScreenSetTextColor(0xFF0000FF);
+					__printf("\nERROR\n\n");
+					__printf("\tDESTINATION: %s\n\tFILE: %s", save_path, entry_name);
+					
 					free(entry_name);
 					free(save_path);
+					sceKernelDelayThread(5000000);
 					return gbZip::ZIP_ERROR;
 				};
 				
 				memset(copy_buffer, 0, sizeof(copy_buffer));
+				
+				pspDebugScreenSetXY(0, 7 + print_y);
+				pspDebugScreenSetTextColor(0xFF00FFFF);
+				__printf("\t%s\t\t\t\t", strrchr(save_path, '/')+1);
+				pspDebugScreenSetTextColor(0xFFFFFFFF);
+				pspDebugScreenSetXY(42, 7+print_y);
+				
+				int div = 0;
+				if(fileHeader.compressedSize>1024) div = 1;
+				__printf("%-6u %s\t", fileHeader.compressedSize/(div?(div * 1024):1), div? "KB": " B");
+				
 				for(i=0;i<fileHeader.compressedSize;i+=copy_count)
 				{
 					if(fileHeader.compressedSize-i < sizeof(copy_buffer)) copy_count = fileHeader.compressedSize-i;
 					else copy_count = sizeof(copy_buffer);
 					
-					pspDebugScreenSetXY(0, 2);
+					pspDebugScreenSetXY(58, 7+print_y);
 					__printf("%-3d%%", i*100/fileHeader.compressedSize);
 					
 					fread(copy_buffer, copy_count, 1, a);
 					fwrite(copy_buffer, copy_count, 1, b);
+				};
+				pspDebugScreenSetXY(58, 7+print_y);
+				__printf("%-3d%%", i*100/fileHeader.compressedSize);
+				
+				print_y++;
+				if(print_y > 20) 
+				{
+					print_y = 0;
+					gbZip::printInfo(root, entry_name);
 				};
 				fclose(b);
 			};
@@ -102,7 +132,7 @@ int gbZip :: unzip(const char * file, const char * root, const char * eboot_name
 	};
 	fclose(a);
 	pspDebugScreenClear();
-	__printf("Installed. Refreshing list..");
+	__printf("\n\tPLEASE WAIT...");
 	return gbZip::ZIP_OK;
 };
 

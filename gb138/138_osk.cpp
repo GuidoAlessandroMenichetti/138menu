@@ -1,5 +1,5 @@
 #include "138_osk.h"
-#include "menu138.h"
+#include "138_menu.h"
 
 osk138 :: osk138()
 {
@@ -102,18 +102,22 @@ void osk138 :: check()
 		while(keyboard[upper][y][x]=='\0') x--;
 	};
 
-	if(ctrl.getCtrl()->left)
-		if(x>0) x--;
-		
-	if(ctrl.getCtrl()->right)
-		if(keyboard[upper][y][x+1]!='\0') x++;
-		
+	if(y>-1 && y<4)
+	{
+		if(ctrl.getCtrl()->left)
+			if(x>0) x--;
+			
+		if(ctrl.getCtrl()->right)
+			if(keyboard[upper][y][x+1]!='\0') x++;
+	};
+	
 	if(ctrl.getCtrl()->cross) 
 	{
 		if(y<0)
 		{
 			this->enabled = 0;
 			this->cancel = 1;
+			return;
 		};
 		if(y==4) this->addChar(' ');
 		else if(y==3 && x==0) upper = upper? 0: 1;
@@ -135,4 +139,3 @@ int osk138 :: Cancelled()
 {
 	return this->cancel;
 };
-//OMG 138 LINES

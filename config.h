@@ -2,10 +2,11 @@
 #define MENU138CONFIG
 
 /** TO BUILD ARK/TN VERSIONS
-	If you want to use the ARK libs, just rename 
-		libpspsystemctrl_user.a to tn_libpspsystemctrl_user.a
-		ark_libpspsystemctrl_user.a to libpspsystemctrl_user.a
-	Same for TN, the wanted lib should be named libpspsystemctrl_user.a
+	If you want to use the TN libs, just rename 
+		libpspsystemctrl_user.a to ARK____libpspsystemctrl_user.a
+		TN____libpspsystemctrl_user.a to libpspsystemctrl_user.a
+		
+	Same for ARK, the wanted lib should be named libpspsystemctrl_user.a, the default one is for ARK
 	Then uncomment the correct define below
 	NOTE: You can't use both at the same time
 **/

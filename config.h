@@ -14,7 +14,7 @@
 //#define ARK
 //#define TN
 
-#define VERSION "L4 (22/06/14)"
+#define VERSION "L4.1 (22/06/14)"
 
 //for design settings check src/design.h
 //for language check src/lang.h

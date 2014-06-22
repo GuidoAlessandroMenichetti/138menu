@@ -206,12 +206,25 @@ int entry138 :: load(const char * path)
 	this->path = new char[strlen(path) + 1];
 	strcpy(this->path, path);
 	
-	//store title
-	name = new char[strlen(sfo_title) + 1];
-	strcpy(name, sfo_title);
+	char * use_name = sfo_title;
 	
-	//fix title string
-	fix_name_string(name);
+	if(type == ISO || type == CSO)
+	{
+		char * sfo_disc_id = file_info.get_data("DISC_ID");
+		
+		if(sfo_disc_id) //patch for japanese games names
+		{
+			if(sfo_disc_id[2] == 'J' || sfo_disc_id[2] == 'K' || sfo_disc_id[2] == 'A' || sfo_disc_id[2] == 'H')
+				use_name = sfo_disc_id;
+		};
+	};
+	
+	//store title
+	name = new char[strlen(use_name) + 1]; 
+	strcpy(name, use_name);
+	
+	if(use_name == sfo_title) //fix title for non-japanese games
+		fix_name_string(name);
 	
 	//success
 	return LOAD_OK;

@@ -1,6 +1,6 @@
-29/11/2013
+22/06/2014
 
-138MenuL3 for VHBL/CEF by GUIDOBOT (Follow @_GUIDOBOT)
+138MenuL4 for VHBL/CEF by GUIDOBOT (Follow @_GUIDOBOT)
 
 Source Code: http://github.com/guidobot/138menu/
 Webpage http://guidobot.hostoi.com/software/138menu.html
@@ -17,6 +17,8 @@ Features
 		. Turkish
 		. Polish
 		. Italian
+
+	- Explorer integrated
 
 	- Various settings
 		. Loading/Showing games/installers icon
@@ -54,6 +56,17 @@ Controls
     	TRIANGLE: Delete
     	CIRCLE: Go back
 
+	While in explorer:
+	
+	SQUARE: Select files
+	TRIANGLE: Choose action
+	CROSS: Browse directory/open file
+	CIRCLE: Go up one dir
+
+
+About the explorer
+	You need to select files with square first, then you can choose an operation using triangle. Some folders like /GAME/ are write/delete protected.
+
 Menu installation
 	Copy the files EBOOT.PBP (rename if needed) and DATA.138 to your exploit/menu folder and transfer to the device.
 
@@ -66,7 +79,7 @@ Homebrew installation
 	Installer file zip structure must be INSTALL.ZIP/Name/EBOOT.PBP compressed in STORE mode, invalid or compressed files will be skiped.
 
 Themes installation
-	Copy the theme .138 file to the menu folder, you can select it on the Settings menu
+	Copy the theme .138 file to the menu folder, you can select it on the Settings menu. Sadly previous version themes are not compatible.
 
 Wallpapers installation
 	Copy your .PNG files to the menu folder. Wallpaper names should NOT begin with ICON, otherwise it will be skipped

@@ -14,26 +14,10 @@
 //#define ARK
 //#define TN
 
-#define VERSION "L3 (29/11/13)"
-#define CREDITS "138Menu by GUIDOBOT"
+#define VERSION "L4 (22/06/14)"
 
-#define INSTALLERS_PATH "ms0:/PSP/SAVEDATA/"
-#define ZIP_NAME "INSTALL.ZIP"
-#define CFG_FILE "138CFG.TXT"
-#define DEFAULT_PATH "ms0:/PSP/VHBL/"
-#define DEFAULT_NAME "wmenu.bin"
-#define DEFAULT_THEME "DATA.138"
-
-#define BUILD_VHBL "VHBL"
-#define BUILD_ARK "ARK CEF"
-#define BUILD_TN "TN CEF"
-
-#if defined(ARK) && defined(TN)
-#undef TN
-#endif
-
-#if defined(ARK) || defined(TN)
-#define CEF
-#endif
+//for design settings check src/design.h
+//for language check src/lang.h
+//for other settings check src/common.h
 
 #endif

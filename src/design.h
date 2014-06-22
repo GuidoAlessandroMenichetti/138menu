@@ -1,0 +1,34 @@
+#ifndef DESIGN
+#define DESIGN
+
+#define BLACK 0xFF000000
+#define WHITE 0xFFFFFFFF
+#define GREY 0xFFCCCCCC
+#define LIGHT_GREY 0xFFDDDDDD
+#define YELLOW 0xFF00FFFF
+#define WEIRD_ORANGE 0xFF2AB1FF
+
+#define SIZE_LITTLE 0.51f
+#define	SIZE_BIG 0.7f
+
+#define LIST_START_X 107
+#define LIST_START_Y 62
+#define LIST_SEPARATION 14
+
+#define TOOLS_X 360
+#define TOOLS_Y 62
+
+#define MAX_ON_SCREEN 14
+#define MAX_ON_SCREEN_EXPLORER 12
+#define CIRCLE_DISTANCE 53//60
+#define CIRCLE_INITIAL_X 60//50
+
+#define MESSAGE_X 8
+#define MESSAGE_Y 200
+
+#define MAX_ICON_WIDTH 144
+#define MAX_ICON_HEIGHT 88
+#define ENTRY_NAME_LIMIT 25
+#define PATH_NAME_LIMIT 40
+
+#endif

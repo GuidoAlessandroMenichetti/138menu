@@ -1,3 +1,10 @@
+L4 Changes:
+	
+	- Added explorer.
+	- Progress screen added. You will see it when installing/copying/moving files.
+	- OSK changed a bit.
+	- Improved stability.
+
 L3 Changes:
 
 	- Added a "Theme" feature in the settings category, place all your .138 theme files in the menu folder. 

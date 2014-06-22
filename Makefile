@@ -1,5 +1,5 @@
 TARGET = 138MENUCPP
-OBJS = main.o gb138/138_menu.o gb138/gbCtrl.o gb138/gbIso.o gb138/gbCso.o gb138/gbZip.o gb138/gbAlloc.o gb138/138_entry.o gb138/138_osk.o gb138/138_cfg.o gb138/138_resources.o gb138/gbExp.o other/vhblBoot.o other/cef.o other/callbacks.o other/string_m.o graphics/graphics.o graphics/framebuffer.o graphics/libccc.o graphics/intraFont.o
+OBJS = main.o src/resources.o src/menu.o src/progress.o src/explorer.o src/entry.o src/filelist.o src/gb/gbsfo.o src/gb/gbiso.o src/gb/gbcso.o src/ctrl.o src/gb/gbzip.o src/osk.o src/cfg.o src/other.o src/graphics/graphics.o src/graphics/framebuffer.o src/graphics/libccc.o src/graphics/intraFont.o
 CFLAGS = -O2 -G0 -Wall
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)

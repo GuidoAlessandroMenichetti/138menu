@@ -147,6 +147,8 @@ int gbzip :: get_end_of_cd()
 	//go to possible eocd offset
 	fseek(stream, - sizeof(t_end_of_central_directory), SEEK_END);
 
+	//pspDebugScreenPrintf("searching eocd\n");
+	
 	do
 	{
 		//read magic
@@ -160,6 +162,8 @@ int gbzip :: get_end_of_cd()
 			//read eocd struct
 			fread(&end_of_cd, sizeof(end_of_cd), 1, stream);
 
+			//pspDebugScreenPrintf("found eocd\n");
+			
 			return 1;
 		};
 
@@ -175,6 +179,8 @@ int gbzip :: get_end_of_cd()
 
 int gbzip :: load(const char * file)
 {
+	//pspDebugScreenPrintf("opening\n");
+
 	//try to open file
 	if(open_file(file, "rb") == false)
 		return 0; //couldnt open file
@@ -231,11 +237,24 @@ unsigned gbzip :: fast_search(const char * file, const char * search)
 		else
 			compare_address = name;
 
+		//pspDebugScreenPrintf("name %s-\n", compare_address);
+		
+		sceKernelDelayThread(3000);
+		
 		if(!strcmp(search, compare_address))
 		{
 			//file found
+			t_zip_file_header file_header;
+			fseek(stream, cd.offset, SEEK_SET);
+			
+			fread(&file_header, sizeof(t_zip_file_header), 1, stream);
+			result = cd.offset + sizeof(t_zip_file_header) + file_header.name_length + file_header.extra_length;
+			
 			found = true;
-			result = cd.offset + sizeof(t_zip_file_header) + cd.extra_length + cd.comment_length + cd.name_length;
+			//result = cd.offset /*+ sizeof(t_zip_file_header) + cd.extra_length + cd.comment_length + cd.name_length*/;
+			//result = ftell(stream);
+			//pspDebugScreenPrintf("%08X + %08X\n", cd.offset, sizeof(t_zip_file_header) + cd.extra_length + cd.comment_length + cd.name_length);
+			//pspDebugScreenPrintf("found\n");
 		};
 
 		delete [] name;
